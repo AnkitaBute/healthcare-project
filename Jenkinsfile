@@ -69,16 +69,27 @@ pipeline {
                     string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
-                    sh 'aws eks update-kubeconfig --region us-east-1 --name test-cluster'
-                    sh 'kubectl get nodes'
+                    sh '''
+                        export AWS_DEFAULT_REGION=us-east-1
+                        aws eks update-kubeconfig --region us-east-1 --name test-cluster
+                        kubectl get nodes
+                    '''
                 }
             }
         }
 
         stage('Deploying the application') {
             steps {
-                sh 'kubectl apply -f app-deploy.yml'
-                sh 'kubectl get svc'
+                withCredentials([
+                    string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh '''
+                        export AWS_DEFAULT_REGION=us-east-1
+                        kubectl apply -f app-deploy.yml
+                        kubectl get svc
+                    '''
+                }
             }
         }
 
@@ -123,16 +134,27 @@ pipeline {
                     string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
-                    sh 'aws eks update-kubeconfig --region us-east-1 --name prod-cluster'
-                    sh 'kubectl get nodes'
+                    sh '''
+                        export AWS_DEFAULT_REGION=us-east-1
+                        aws eks update-kubeconfig --region us-east-1 --name prod-cluster
+                        kubectl get nodes
+                    '''
                 }
             }
         }
 
         stage('Deploying the application to production') {
             steps {
-                sh 'kubectl apply -f app-deploy.yml'
-                sh 'kubectl get svc'
+                withCredentials([
+                    string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh '''
+                        export AWS_DEFAULT_REGION=us-east-1
+                        kubectl apply -f app-deploy.yml
+                        kubectl get svc
+                    '''
+                }
             }
         }
 
