@@ -10,7 +10,7 @@ pipeline {
     stage('Building docker image') {
       steps {
         script {
-          sh 'docker build -t lax6094/capstone02:v1 .'
+          sh 'docker build -t ankitabute2/capstone02:v1 .'
           sh 'docker images'
         }
       }
@@ -19,7 +19,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'docker-creds', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
           sh "echo $PASS | docker login -u $USER --password-stdin"
-          sh 'docker push lax6094/capstone02:v1'
+          sh 'docker push ankitabute2/capstone02:v1'
         }
       }
     }
