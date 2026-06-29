@@ -46,8 +46,12 @@ pipeline {
     }
     stage('get kubeconfig') {
       steps {
-        sh 'aws eks update-kubeconfig --region us-east-1 --name test-cluster'
-        sh 'kubectl get nodes'
+          withCredentials([
+            string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
+             sh 'aws eks update-kubeconfig --region us-east-1 --name test-cluster'
+            sh 'kubectl get nodes'
       }
     }
     stage('Deploying the application') {
@@ -83,12 +87,17 @@ pipeline {
       }
     }
     stage('get kubeconfig for production') {
-      steps {
-        sh 'aws eks update-kubeconfig --region us-east-1 --name prod-cluster'
-        sh 'kubectl get nodes'
-      }
+    steps {
+        withCredentials([
+            string(credentialsId: 'aws_access_key_id', variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'aws_secret_access_key', variable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
+            sh 'aws eks update-kubeconfig --region us-east-1 --name prod-cluster'
+            sh 'kubectl get nodes'
+        }
     }
-    stage('Deploying the application to production') {
+}
+  stage('Deploying the application to production') {
       steps {
         sh 'kubectl apply -f app-deploy.yml'
         sh 'kubectl get svc'
